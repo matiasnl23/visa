@@ -1,6 +1,7 @@
 import fs from "fs";
 import puppeteer from "puppeteer";
 import dotenv from "dotenv";
+import dayjs from "dayjs";
 import { ICard } from "./interfaces/card";
 import { login } from "./helpers/login";
 import {
@@ -33,9 +34,9 @@ dotenv.config();
     cards[i].movements = await getLastMovements(page);
   }
 
-  const fileName = `visa-${new Date().toISOString()}`.replace(/[\.,\:]/g, "");
+  const fileName = `./visa-${dayjs().format("YYYY-MM-DD")}.json`;
 
-  fs.writeFileSync(`./${fileName}.json`, JSON.stringify(cards, null, 2));
+  fs.writeFileSync(fileName, JSON.stringify(cards, null, 2));
 
   await browser.close();
 })();

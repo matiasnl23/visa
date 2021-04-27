@@ -5,6 +5,7 @@ import dayjs from "dayjs";
 import { ICard } from "./interfaces/card";
 import { login } from "./helpers/login";
 import {
+  getAuthorizations,
   getCardList,
   getCardSummary,
   getLastMovements,
@@ -26,12 +27,14 @@ dotenv.config();
     ...c,
     summary: [],
     movements: [],
+    authorizations: [],
   }));
 
   for (let i = 0; i < cards.length; i++) {
     await selectCard(page, i + 1);
     cards[i].summary = await getCardSummary(page);
     cards[i].movements = await getLastMovements(page);
+    cards[i].authorizations = await getAuthorizations(page);
   }
 
   const fileName = `./visa-${dayjs().format("YYYY-MM-DD")}.json`;

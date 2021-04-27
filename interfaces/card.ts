@@ -1,6 +1,7 @@
 export interface ICard extends ICardBase {
   summary: ISummaryDetail[];
   movements: IMovement[];
+  authorizations: IAuthorization[];
 }
 
 export interface ICardBase {
@@ -19,6 +20,14 @@ export interface IMovement {
   date: string;
   description: string;
   receipt: string;
+  ars: string;
+  usd: string;
+}
+
+export interface IAuthorization {
+  date: string;
+  description: string;
+  type: string;
   ars: string;
   usd: string;
 }

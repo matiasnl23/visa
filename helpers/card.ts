@@ -1,5 +1,10 @@
 import { Page } from "puppeteer";
-import { ICardBase, IMovement, ISummaryDetail } from "../interfaces/card";
+import {
+  IAuthorization,
+  ICardBase,
+  IMovement,
+  ISummaryDetail,
+} from "../interfaces/card";
 
 export const selectCard = async (
   page: Page,
@@ -110,4 +115,59 @@ export const getLastMovements = async (page: Page): Promise<IMovement[]> => {
   });
 
   return movements;
+};
+
+export const getAuthorizations = async (
+  page: Page
+): Promise<IAuthorization[]> => {
+  const firstBarButton = await page.$$eval(
+    '[id="menu:menuFrm:menu"]>ul>li',
+    (lists) => {
+      return lists.findIndex(
+        (li) => li.querySelector(".label")?.textContent === "CONSULTAR"
+      );
+    }
+  );
+  await page.click(
+    `[id="menu:menuFrm:menu"]>ul>li:nth-of-type(${firstBarButton + 1})`
+  );
+
+  await page.waitForSelector('[id="submenu_0"]');
+  const lastMovementsButton = await page.$$eval(
+    '[id="submenu_0"]>ul>li>a',
+    (lists) => {
+      return lists.findIndex((a) => a.textContent === "Últimos Movimientos");
+    }
+  );
+  await page.click(
+    `[id="submenu_0"]>ul>li:nth-of-type(${lastMovementsButton + 1})>a`
+  );
+
+  await page.waitForTimeout(1000);
+
+  const authorizationTab = await page.$$eval(".tabs-box ul li a", (tabs) =>
+    tabs.findIndex((a) => a.textContent === "Autorizaciones pendientes")
+  );
+
+  await page.click(`.tabs-box ul li:nth-of-type(${authorizationTab + 1}) a`);
+
+  await page.waitForTimeout(1000);
+
+  const authorizations = await page.$$eval("tr.even,tr.odd", (rows) => {
+    const getColumn = (id: number) => {
+      return `td:nth-of-type(${id})`;
+    };
+
+    return rows.map((row) => ({
+      date: row.querySelector(getColumn(1))?.textContent?.trim() as string,
+      description: row
+        .querySelector(getColumn(2))
+        ?.textContent?.trim() as string,
+      type: row.querySelector(getColumn(3))?.textContent?.trim() as string,
+      ars: row.querySelector(getColumn(4))?.textContent?.trim() as string,
+      usd: row.querySelector(getColumn(5))?.textContent?.trim() as string,
+    }));
+  });
+
+  return authorizations;
 };

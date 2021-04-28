@@ -11,7 +11,7 @@ import {
   getLastMovements,
   selectCard,
 } from "./helpers/card";
-dotenv.config();
+dotenv.config({ path: `${__dirname}/.env`.replace("dist/", "") });
 
 (async () => {
   let cards: ICard[] = [];
@@ -37,7 +37,9 @@ dotenv.config();
     cards[i].authorizations = await getAuthorizations(page);
   }
 
-  const fileName = `./visa-${dayjs().format("YYYY-MM-DD")}.json`;
+  const fileName = `${__dirname}/visa-${dayjs().format(
+    "YYYY-MM-DD"
+  )}.json`.replace("dist/", "");
 
   fs.writeFileSync(fileName, JSON.stringify(cards, null, 2));
 
